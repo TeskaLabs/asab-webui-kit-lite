@@ -25,62 +25,44 @@ import {
 
 
 export default function ConfigEditor(props) {
+	let App = props.app;
 
-	const [ typeId, setTypeId ] = useState(props.match.params.type_id);
+	const configType = props.match.params.config_type;
+	const configName = props.match.params.config_name;
+
 	const [ type, setType ] = useState(undefined);
+
 	const [ adHocSections, setAdHocSections ] = useState({});
 	const { register, handleSubmit, setValue, getValues, errors } = useForm();
 
-	let App = props.app;
-	// Retrieve the ASAB_CONFIG_URL from config file
-	let services = App.Config.get('SERVICES');
-	let url = services?.asabconfig ? services.asabconfig : 'asab-config';
-	const Axios = App.axiosCreate(url);
+	const Axios = App.axiosCreate('asab-config');
 
 	useEffect(() => {
-		load();
-	},[]);
 
+		async function initalLoad() {
 
-	const load = async () => {
-		if (typeId) {
+			let values = undefined;
+			let type = undefined;
+
 			try {
-				let response = await Axios.get("/type/" + typeId);
-				setType(response.data);
+				let response = await Axios.get("/type/" + configType);
+				type = response.data;
 				// TODO: validate responses which are not 200
 			}
-			catch {
+			catch (error) {
 				console.log(error); // log the error to the browser's console
-				App.addAlert("warning", `Unable to get ${typeId} data: ${error}`);
+				App.addAlert("warning", `Unable to get ${configType} data: ${error}`);
 				return;
 				// TODO: Prepared for i18n
-				// App.addAlert("warning", t(`Unable to get ${typeId} data: `, { error: error.toString() }));
+				// App.addAlert("warning", t(`Unable to get ${configType} data: `, { error: error.toString() }));
 			}
-		}
-	}
 
-	// TODO: fetch list of configs (for treeview)
-	// useEffect(() => {
-
-	// 	async function fetchConfigs() {
-	// 		let list_of_configs = await Axios.get("/config/" + typeId);
-	// 		let configs = list_of_configs.data;
-	// 		setConfigList(configs);
-	// 	}
-	// 	fetchConfigs();
-	// }, [type]);
-
-	useEffect(() => {
-
-		async function fetchValues() {
-			let values = {}
-			// TODO: make config value dynamic in url (replace `new_config`)
 			try {
-				let response = await Axios.get("/config/" + typeId + "/new_config" + "?format=json");
+				let response = await Axios.get("/config/" + configType + "/" + configName + "?format=json");
 				values = response.data;
 				// TODO: validate responses which are not 200
 			}
-			catch {
+			catch (error) {
 				console.log(error); // log the error to the browser's console
 				App.addAlert("warning", `Unable to get config data: ${error}`);
 				return;
@@ -88,44 +70,30 @@ export default function ConfigEditor(props) {
 				// App.addAlert("warning", t(`Unable to get config data: `, { error: error.toString() }));
 			}
 
-			// // Mocked
-			// let values = {
-			// 	'asab:storage': {
-			// 		'type': "fool",
-			// 	},
-			// 	'general': {
-			// 		'uid': "123",
-			// 		'ahoj1': 'jdasj'
-			// 	},
-			// 	'admiral': {
-			// 		'papillon': "666",
-			// 	},
-			// };
-			if (Object.keys(values).length > 0) {
-				let stringifiedSchemaValues = getValues() ? JSON.stringify(getValues()) : "";
-				let adHocValues = {};
-				for (var section in values) {
-					let arr = [];
-					for (var key in values[section]) {
-						// Set config values to the schema (if available)
-						setValue('['+section + "] " + key, values[section][key], { shouldValidate: false })
-						// Check if config key values are in schema and if not, add it to adhoc values
-						let k = {};
-						if (stringifiedSchemaValues.indexOf(section +" " + key) == -1) {
-							k[key] = values[section][key];
-							arr.push(k);
-							adHocValues[section] = arr;
-						}
+			setType(type);
+
+			let stringifiedSchemaValues = getValues() ? JSON.stringify(getValues()) : "";
+			let adHocValues = {};
+			for (var section in values) {
+				let arr = [];
+				for (var key in values[section]) {
+					// Set config values to the schema (if available)
+					setValue('['+section + "] " + key, values[section][key], { shouldValidate: false })
+					// Check if config key values are in schema and if not, add it to adhoc values
+					let k = {};
+					if (stringifiedSchemaValues.indexOf(section +" " + key) == -1) {
+						k[key] = values[section][key];
+						arr.push(k);
+						adHocValues[section] = arr;
 					}
 				}
-				setAdHocSections(adHocValues)
-			} else {
-				App.addAlert("warning", 'Config file is empty.')
 			}
-		}
-		fetchValues();
+			setAdHocSections(adHocValues)
 
-	},[type]); //configId
+		}
+		
+		initalLoad();
+	},[]);
 
 
 	// Parse data to JSON format, stringify it and save to config file
@@ -157,7 +125,7 @@ export default function ConfigEditor(props) {
 
 		try {
 			// TODO: make config dynamic value
-			let response = await Axios.put("/config/" + typeId + "/new_config",
+			let response = await Axios.put("/config/" + configName + "/" + configType,
 				JSON.stringify(parsedSections),
 					{ headers: {
 						'Content-Type': 'application/json'
@@ -181,18 +149,17 @@ export default function ConfigEditor(props) {
 					<Form onSubmit={handleSubmit(onSubmit)}>
 						
 						<Card style={{marginBottom: "0.25em"}}>
-							<div style={{margin: "0.5em"}}>
+							<CardHeader>
+								{configType} / {configName}
+							</CardHeader>
+							<CardBody>
 								<Button
 									color="primary"
 									type="submit"
 								>
 									Save
 								</Button>
-								<div className="float-right">
-									<span className="cil-briefcase pr-3" />
-									{typeId}
-								</div>
-							</div>
+							</CardBody>
 						</Card>
 
 						{/*TODO: add a readOnly item adHocValue when schema does not match all the sections/values of the config*/}
