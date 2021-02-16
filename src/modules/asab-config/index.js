@@ -20,7 +20,7 @@ export default class ConfigModule extends Module {
 		});
 
 		this.Router.addRoute({
-			path: "/config/:type_id",
+			path: "/config/:config_type/:config_name",
 			exact: true,
 			name: "Type",
 			component: ConfigEditor,
