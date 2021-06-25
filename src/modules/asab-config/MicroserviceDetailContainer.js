@@ -19,6 +19,7 @@ const MicroserviceDetailContainer = (props) => {
         //     then(svc => setSvc(svc)).
         //     catch(e => props.app.addAler)
         setSvc({
+            "name": "ASABConfigApplication.0000000101",
             "appclass": "ASABConfigApplication",
             "launchtime": "2021-06-24T10:43:51.885514",
             "hostname": "DZMITRYs-Air.teskalabs.int",
@@ -32,7 +33,7 @@ const MicroserviceDetailContainer = (props) => {
             <Row className="justify-content-md-center">
                 <Col md={6}>
                     <Card>
-                        <CardHeader>{svc?.appclass}</CardHeader>
+                        <CardHeader>{svc?.name}</CardHeader>
                         <CardBody>
                             <Row>
                                 <Col md={3}>{t("Launch time")}</Col>
@@ -50,7 +51,7 @@ const MicroserviceDetailContainer = (props) => {
                                 <Row className="mt-3">
                                     <Col md={3}>{t("Error")}</Col>
                                     <Col>
-                                        <pre><code>{svc?.reloading_pipelines_exception}</code></pre>
+                                        <code style={{ width: "100%", overflow: "visible", wordBreak: "break-word" }}>{svc?.reloading_pipelines_exception}</code>
                                     </Col>
                                 </Row>)
                             }
