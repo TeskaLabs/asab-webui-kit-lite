@@ -36,28 +36,46 @@ const MicroserviceDetailContainer = (props) => {
                         <CardHeader>{svc?.name}</CardHeader>
                         <CardBody>
                             <Row>
-                                <Col md={3}>{t("Launch time")}</Col>
+                                <Col md={3}>{t("MicroserviceDetailContainer|Launch time")}</Col>
                                 <Col>
                                     <DateTime value={svc?.launchtime} />
                                 </Col>
                             </Row>
 
                             <Row className="mt-3">
-                                <Col md={3}>{t("Host")}</Col>
+                                <Col md={3}>{t("MicroserviceDetailContainer|Host")}</Col>
                                 <Col>{svc?.hostname}</Col>
                             </Row>
 
                             { svc?.pipelines_reloaded && (
                                 <Row className="mt-3">
-                                    <Col md={3}>{t("Error")}</Col>
-                                    <Col>
-                                        <code style={{ width: "100%", overflow: "visible", wordBreak: "break-word" }}>{svc?.reloading_pipelines_exception}</code>
-                                    </Col>
+                                    <Col md={3}>{t("MicroserviceDetailContainer|Pipelines reloaded")}</Col>
+                                    <Col>True</Col>
                                 </Row>)
                             }
                         </CardBody>
                     </Card>
                 </Col>
+                { svc?.reloading_pipelines_exception && (
+                    <Col md={6}>
+                        <Card>
+                            <CardHeader>{t("MicroserviceDetailContainer|Reloading pipelines exception")}</CardHeader>
+                            <CardBody className="alert alert-danger mb-0">
+                                <Row className="m-auto">
+                                    <code
+                                        style={{
+                                            width: "100%",
+                                            overflow: "visible",
+                                            wordBreak: "break-word" 
+                                        }}
+                                    >
+                                        {svc?.reloading_pipelines_exception}
+                                    </code>
+                                </Row>
+                            </CardBody>
+                        </Card>
+                    </Col>
+                )}
             </Row>
         </Container>
     )

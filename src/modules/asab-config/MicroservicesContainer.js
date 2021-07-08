@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from 'react';
+import { useTranslation } from 'react-i18next';
 
 import { Container } from 'reactstrap';
 
@@ -10,11 +11,39 @@ export default (props) => {
     const [list, setList] = useState([]);
     const [page, setPage] = useState(1);
 
+    const { t } = useTranslation();
+
     const headers = [ 
-        { name: 'Name', key: 'appclass', link: { key: "name", pathname: "/config/svcs/" } },
-        { name: 'Launch time', key: 'launchtime', datetime: true },
-        { name: 'Host', key: 'hostname' },
-        { name: "Errors", key: 'pipelines_reloaded' }
+        { name: t('MicroservicesContainer|Name'), key: 'appclass', link: { key: "name", pathname: "/config/svcs/" } },
+        { name: t('MicroservicesContainer|Launch time'), key: 'launchtime', datetime: true },
+        { name: t('MicroservicesContainer|Host'), key: 'hostname' },
+        { 
+            name: t("MicroservicesContainer|Pipelines reloaded"),
+            customComponent: {
+                generate: (obj) => ( 
+                    obj.pipelines_reloaded ?
+                    <p>True</p> :
+                    <p>-</p>
+                )
+            }
+        },
+        {
+            name: t("MicroservicesContainer|Reloading pipelines exception"),
+            customComponent: {
+                generate: (obj) => ( obj.reloading_pipelines_exception ?
+                    <p
+                        className="alert-danger p-1"
+                        style={{
+                            maxWidth: "30ch",
+                            overflow: "hidden",
+                            textOverflow: "ellipsis",
+                            whiteSpace: "nowrap"
+                        }}
+                    >{obj.reloading_pipelines_exception}</p> :
+                    <p>-</p>
+                )
+            }
+        }
     ];
     const limit = 10;
 
