@@ -25,7 +25,7 @@ const MicroserviceDetailContainer = (props) => {
     return (
         <Container>
             <Row className="justify-content-md-center">
-                <Col md={6}>
+                <Col md={8}>
                     <Card>
                         <CardHeader>{svc_name}</CardHeader>
                         <CardBody>
@@ -51,7 +51,7 @@ const MicroserviceDetailContainer = (props) => {
 
             {svc && (
                 <Row className="justify-content-md-center">
-                    <Col md={6}>
+                    <Col md={8}>
                         <Card>
                             <CardHeader>JSON</CardHeader>
                             <CardBody>
