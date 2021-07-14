@@ -16,34 +16,7 @@ export default (props) => {
     const headers = [ 
         { name: t('MicroservicesContainer|Name'), key: 'appclass', link: { key: "name", pathname: "/config/svcs/" } },
         { name: t('MicroservicesContainer|Launch time'), key: 'launchtime', datetime: true },
-        { name: t('MicroservicesContainer|Host'), key: 'hostname' },
-        { 
-            name: t("MicroservicesContainer|Pipelines reloaded"),
-            customComponent: {
-                generate: (obj) => ( 
-                    obj.pipelines_reloaded ?
-                    <p>True</p> :
-                    <p>-</p>
-                )
-            }
-        },
-        {
-            name: t("MicroservicesContainer|Reloading pipelines exception"),
-            customComponent: {
-                generate: (obj) => ( obj.reloading_pipelines_exception ?
-                    <p
-                        className="alert-danger p-1"
-                        style={{
-                            maxWidth: "30ch",
-                            overflow: "hidden",
-                            textOverflow: "ellipsis",
-                            whiteSpace: "nowrap"
-                        }}
-                    >{obj.reloading_pipelines_exception}</p> :
-                    <p>-</p>
-                )
-            }
-        }
+        { name: t('MicroservicesContainer|Host'), key: 'hostname' }
     ];
     const limit = 10;
 
@@ -61,14 +34,13 @@ export default (props) => {
 
         const ASABConfigAPI = props.app.axiosCreate('asab_config');
 
-        ASABConfigAPI.get('/microservices').
-            then(res => parseDataIntoArr(res.data)).
-            then(lst => setList(lst.map(i => ({...i, "pipelines_reloaded": "True", "reloading_pipelines_exception": "Pipeline failed due to Lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed ut venenatis tortor. Vivamus a enim id diam laoreet elementum quis eu dolor. Curabitur tincidunt orci non turpis accumsan volutpat a sed eros. Quisque vel placerat quam, non faucibus leo. Morbi mollis, urna non molestie gravida, metus nisi cursus nisl, sit amet ornare sapien leo et velit. Fusce ac ultrices mi. Duis fermentum viverra iaculis. Ut gravida felis felis, a faucibus dolor viverra at. Donec tempus lacinia ligula at ullamcorper. Duis iaculis condimentum tristique."}))));
+        ASABConfigAPI.get('/microservices')
+            .then(res => setList(parseDataIntoArr(res.data)))
+            .catch(e => {
+                console.error(e);
+                props.app.addAlert("warning", t('Failed fetch'));
+            })
     }, []);
-
-    useEffect(() => {
-        console.log(list);
-    }, [list])
 
     return (
         <Container>

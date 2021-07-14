@@ -20,7 +20,7 @@ export default class ConfigModule extends Module {
 		});
 
 		this.Router.addRoute({
-			path: "/config/svcs/:svcs_name",
+			path: "/config/svcs/:svc_name",
 			exact: true,
 			name: "Microservice",
 			component: MicroserviceDetailContainer,
