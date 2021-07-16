@@ -11,6 +11,7 @@ import ReactJSON from 'react-json-view';
 
 const MicroserviceDetailContainer = (props) => {
     const [svc, setSvc] = useState(null);
+    const [error, setError] = useState(null);
     const { t } = useTranslation();
     const { svc_name } = useParams();
 
@@ -18,8 +19,21 @@ const MicroserviceDetailContainer = (props) => {
 
     useEffect(() => {
         ASABConfigAPI.get(`microservices/${svc_name}`)
-            .then(svc => setSvc(svc.data))
-            .catch(e => props.app.addAlert(t("warning", t('Failed fetch'))));
+            .then(res => res.data)
+            .then(svc => {
+                if (svc == null) {
+                    props.app.addAlert("warning", t("MicroserviceDetailContainer|This microservice doesn't exist"));
+                    setError("This microservice doesn't exist");
+                }
+                else {
+                    setSvc(svc);
+                }
+            })
+            .catch(e => {
+                props.app.addAlert("warning", t('Failed fetch'));
+                console.error(e);
+                setError("Something went wrong and this microservice wasn't found")
+            });
     }, []);
 
     return (
@@ -27,23 +41,30 @@ const MicroserviceDetailContainer = (props) => {
             <Row className="justify-content-md-center">
                 <Col md={8}>
                     <Card>
-                        <CardHeader>{svc_name}</CardHeader>
+                        <CardHeader>{svc?.appclass}</CardHeader>
                         <CardBody>
-                            <Row>
-                                <Col md={3}>{t("MicroserviceDetailContainer|Name")}</Col>
-                                <Col>{svc?.appclass}</Col>
-                            </Row>
-                            <Row className="mt-3">
-                                <Col md={3}>{t("MicroserviceDetailContainer|Launch time")}</Col>
-                                <Col>
-                                    <DateTime value={svc?.launchtime} />
-                                </Col>
-                            </Row>
-
-                            <Row className="mt-3">
-                                <Col md={3}>{t("MicroserviceDetailContainer|Host")}</Col>
-                                <Col>{svc?.hostname}</Col>
-                            </Row>
+                            {error ? (
+                                    <div className="text-center">
+                                        <h5>{t(`MicroserviceDetailContainer|${error}`)}</h5>
+                                    </div>
+                                ) : (
+                                <>
+                                    <Row>
+                                        <Col md={3}>{t("MicroserviceDetailContainer|ID")}</Col>
+                                        <Col>{svc_name}</Col>
+                                    </Row>
+                                    <Row className="mt-3">
+                                        <Col md={3}>{t("MicroserviceDetailContainer|Host")}</Col>
+                                        <Col>{svc?.hostname}</Col>
+                                    </Row>
+                                    <Row className="mt-3">
+                                        <Col md={3}>{t("MicroserviceDetailContainer|Launch time")}</Col>
+                                        <Col>
+                                            <DateTime value={svc?.launchtime} />
+                                        </Col>
+                                    </Row>
+                                </>
+                            )}
                         </CardBody>
                     </Card>
                 </Col>
@@ -53,7 +74,7 @@ const MicroserviceDetailContainer = (props) => {
                 <Row className="justify-content-md-center">
                     <Col md={8}>
                         <Card>
-                            <CardHeader>JSON</CardHeader>
+                            <CardHeader>{t("MicroserviceDetailContainer|Detail")}</CardHeader>
                             <CardBody>
                                 <Row className="m-auto" >
                                     <Col>
