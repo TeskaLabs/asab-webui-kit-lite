@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from 'react';
+import { useTranslation } from 'react-i18next';
 
 import { Container } from 'reactstrap';
 
@@ -10,10 +11,12 @@ export default (props) => {
     const [list, setList] = useState([]);
     const [page, setPage] = useState(1);
 
+    const { t } = useTranslation();
+
     const headers = [ 
-        { name: 'Name', key: 'appclass' },
-        { name: 'Launch time', key: 'launchtime', datetime: true },
-        { name: 'Host', key: 'hostname' }
+        { name: t('MicroservicesContainer|Name'), key: 'appclass', link: { key: "name", pathname: "/config/svcs/" } },
+        { name: t('MicroservicesContainer|Launch time'), key: 'launchtime', datetime: true },
+        { name: t('MicroservicesContainer|Host'), key: 'hostname' }
     ];
     const limit = 10;
 
@@ -31,9 +34,12 @@ export default (props) => {
 
         const ASABConfigAPI = props.app.axiosCreate('asab_config');
 
-        ASABConfigAPI.get('/microservices').
-            then(res => parseDataIntoArr(res.data)).
-            then(lst => setList(lst));
+        ASABConfigAPI.get('/microservices')
+            .then(res => setList(parseDataIntoArr(res.data)))
+            .catch(e => {
+                console.error(e);
+                props.app.addAlert("warning", t('Failed fetch'));
+            })
     }, []);
 
     return (

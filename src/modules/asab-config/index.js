@@ -2,7 +2,7 @@ import React, { Component } from 'react';
 import Module from 'asab-webui/abc/Module';
 import ConfigContainer from "./ConfigContainer";
 import MicroservicesContainer from "./MicroservicesContainer";
-
+import MicroserviceDetailContainer from "./MicroserviceDetailContainer";
 
 export default class ConfigModule extends Module {
 	constructor(app, name) {
@@ -13,17 +13,24 @@ export default class ConfigModule extends Module {
 		this.Router = app.Router;
 
 		this.Router.addRoute({
+			path: "/config/svcs",
+			exact: true,
+			name: "Microservices",
+			component: MicroservicesContainer,
+		});
+
+		this.Router.addRoute({
+			path: "/config/svcs/:svc_name",
+			exact: true,
+			name: "Microservice",
+			component: MicroserviceDetailContainer,
+		})
+
+		this.Router.addRoute({
 			path: "/config/:configType/:configName",
 			exact: true,
 			name: "Configuration",
 			component: ConfigContainer,
-		});
-
-		this.Router.addRoute({
-			path: "/config/microservices",
-			exact: true,
-			name: "Microservices",
-			component: MicroservicesContainer,
 		});
 
 		this.Navigation.addItem({
@@ -37,7 +44,7 @@ export default class ConfigModule extends Module {
 				},
 				{
 					name: "Microservices",
-					url: "/config/microservices",
+					url: "/config/svcs",
 					icon: 'cil-list',
 				}
 			]

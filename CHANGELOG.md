@@ -40,6 +40,7 @@
 
 - Implemented About screen to the dropdown in auth header (INDIGO Sprint 210611, [!130](https://github.com/TeskaLabs/asab-webui/pull/130))
 
+- Add MicroservicesDetailScreen (INDIGO Sprint 210709, [!132](https://github.com/TeskaLabs/asab-webui/pull/132))
 
 ### Refactoring
 
